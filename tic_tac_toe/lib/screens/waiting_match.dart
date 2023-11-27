@@ -19,23 +19,16 @@ class _WaitingMatchScreenState extends State<WaitingMatchScreen> {
   @override
   void initState() {
     super.initState();
+
     onEntryChangedSubscription =
-        TicTacToeService.listenUserChanged(onListenUserChanged);
+        TicTacToeService.listenGameChanged(onListenGameChanged);
   }
 
-  onListenUserChanged() async {
+  onListenGameChanged(String key) async {
     final status = TicTacToeService.user!.status;
 
-    if (status == 'playing') {
+    if (status == 'in progress') {
       NavigatorRoutes.navigateToBoard(context);
-    } else if (status == 'online') {
-      print(
-          '***************IMPORTANTE*******************Sacar modal que indique que abandonaron el Juego');
-      Navigator.popUntil(
-          context,
-          (route) =>
-              route.settings.name == NavigatorRoutes.availableGamesRoute);
-      NavigatorRoutes.navigateToAvailableMatches(context);
     }
   }
 

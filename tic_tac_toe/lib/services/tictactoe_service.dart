@@ -236,6 +236,13 @@ class TicTacToeService {
           highlightWinningMove();
         }
       }
+
+      if (key == 'player_2') {
+        final player2JSON = event.snapshot.value as Map<Object?, dynamic>;
+        final player2 = PlayerModel.fromJSON(player2JSON);
+        match!.player2 = player2;
+      }
+
       onListenGameChanged(key);
     });
   }
