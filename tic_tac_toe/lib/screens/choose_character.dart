@@ -18,7 +18,11 @@ class _ChooseCharacterScreenState extends State<ChooseCharacterScreen> {
   void onTapGoToMatchButton(BuildContext context) async {
     if (selectedCharacterIndex != null) {
       await TicTacToeService.setCharacterPlayer(selectedCharacterIndex!);
-      NavigatorRoutes.navigateToWaitingMatch(context);
+      if (TicTacToeService.user!.id == TicTacToeService.match!.player1!.id) {
+        NavigatorRoutes.navigateToWaitingMatch(context);
+      } else {
+        NavigatorRoutes.navigateToBoard(context);
+      }
     }
   }
 

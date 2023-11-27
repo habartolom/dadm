@@ -18,17 +18,16 @@ class _HomeScreenState extends State<HomeScreen> {
   void redirect(BuildContext context) async {
     final user = await TicTacToeService.getUserPlayerAsync();
     await TicTacToeService.getMatchAsync();
+    await TicTacToeService.getAvailableMatchesAsync();
     if (user!.status == "online") {
       NavigatorRoutes.navigateToAvailableMatches(context);
-    } else if (user!.status == 'choosing avatar') {
+    } else if (user.status == 'choosing avatar') {
       NavigatorRoutes.navigateToChooseCharacter(context);
-    } else if (user!.status == 'waiting match') {
+    } else if (user.status == 'waiting match') {
       NavigatorRoutes.navigateToWaitingMatch(context);
-    } else if (user!.status == 'playing') {
+    } else if (user.status == 'playing' || user.status == 'finishing') {
       NavigatorRoutes.navigateToBoard(context);
-    } else if (user!.status == 'finishing') {
-      NavigatorRoutes.navigateToWinner(context);
-    } else if (user!.status == 'waiting rematch') {
+    } else if (user.status == 'waiting rematch') {
       NavigatorRoutes.navigateToWaitingReMatch(context);
     } else {
       NavigatorRoutes.navigateToAvailableMatches(context);

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe/common/navigator_routes.dart';
-import 'package:tic_tac_toe/models/match.dart';
-import 'package:tic_tac_toe/models/player.dart';
 import 'package:tic_tac_toe/services/tictactoe_service.dart';
 import 'package:tic_tac_toe/widgets/app_bar.dart';
 import 'package:tic_tac_toe/widgets/navigation_bar.dart';
@@ -14,26 +12,12 @@ class AvailableGamesScreen extends StatefulWidget {
 }
 
 class _AvailableGamesScreenState extends State<AvailableGamesScreen> {
-  List<MatchModel> availableGames = [
-    MatchModel(
-      id: "1",
-      player1: PlayerModel(
-        id: '1',
-      ),
-      status: 'pending',
-    ),
-    MatchModel(
-      id: "2",
-      player1: PlayerModel(
-        id: '2',
-      ),
-      status: 'pending',
-    ),
-  ];
-
   void startNewGame() async {
     await TicTacToeService.startNewGame();
-    NavigatorRoutes.navigateToChooseCharacter(context);
+  }
+
+  void startAvailableGame(int index) async {
+    await TicTacToeService.startAvailableGame(index);
   }
 
   @override
@@ -44,15 +28,16 @@ class _AvailableGamesScreenState extends State<AvailableGamesScreen> {
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: availableGames.length,
+              itemCount: TicTacToeService.availableMatches!.length,
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
-                    // Lógica cuando se hace clic en el elemento
+                    startAvailableGame(index);
                     NavigatorRoutes.navigateToChooseCharacter(context);
                   },
                   child: ListTile(
-                    title: Text('ID del Juego: ${availableGames[index].id}'),
+                    title: Text(
+                        'ID del Juego: ${TicTacToeService.availableMatches![index].number}'),
                     // subtitle: Text(
                     //   'Estadísticas del Jugador:\n'
                     //   'Ganados: ${availableGames[index].player1?.statistics?.wonMatches ?? 0}\n'
@@ -77,6 +62,7 @@ class _AvailableGamesScreenState extends State<AvailableGamesScreen> {
             child: ElevatedButton(
               onPressed: () => {
                 startNewGame(),
+                NavigatorRoutes.navigateToChooseCharacter(context),
               },
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white,

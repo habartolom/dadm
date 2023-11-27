@@ -74,12 +74,6 @@ class FirebaseService {
     await _games.update({'count': count});
   }
 
-  Future<void> setCharacterPlayer(
-      int player, String matchId, String character) async {
-    final userNodeRef = _games.child('$matchId/player_$player');
-    await userNodeRef.update({'character': character});
-  }
-
   Future<MatchModel?> getMatchByIdAsync(String matchId) async {
     MatchModel? game;
 
@@ -93,6 +87,26 @@ class FirebaseService {
     }
 
     return game;
+  }
+
+  Future<List<MatchModel>> getAvailableMatchesAsync() async {
+    List<MatchModel> availableGames = [];
+
+    try {
+      final availableGamesRef =
+          await _games.orderByChild('status').equalTo('pending').once();
+      final snapshot = availableGamesRef.snapshot;
+      final availableGamesJSON = snapshot.value as Map<dynamic, dynamic>;
+
+      availableGamesJSON.forEach((key, game) {
+        final availableGame = MatchModel.fromJSON(key, game);
+        availableGames.add(availableGame);
+      });
+    } catch (error) {
+      print("Error al obtener el encuentro: $error");
+    }
+
+    return availableGames;
   }
 
   Future<int> getMathesCount() async {

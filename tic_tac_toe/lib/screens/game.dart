@@ -30,7 +30,8 @@ class _GameScreenState extends State<GameScreen> {
     // }
   }
 
-  void onlistenGameChanged() {
+  void onlistenGameChanged(String key) {
+    print(key);
     board = TicTacToeService.grid;
     setState(() {});
   }
@@ -40,6 +41,7 @@ class _GameScreenState extends State<GameScreen> {
     super.initState();
     onEntryChangedSubscription =
         TicTacToeService.listenGameChanged(onlistenGameChanged);
+    TicTacToeService.setBoard();
   }
 
   @override
@@ -62,7 +64,7 @@ class _GameScreenState extends State<GameScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   const Text(
-                    "Selecciona quien iniciará la partida",
+                    "May the best win!",
                     style: TextStyle(
                       fontFamily: 'Gabriela',
                       fontSize: 18,
@@ -76,55 +78,8 @@ class _GameScreenState extends State<GameScreen> {
                       onSquareTapped: onSquareTapped,
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "The turn is for the player ",
-                        style: TextStyle(
-                          fontFamily: 'Gabriela',
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 35, 110, 240),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      Image.asset(
-                        TicTacToeService.match!.playerInTurn!.character!,
-                        width: 40,
-                        height: 40,
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    width: 200,
-                    child: ElevatedButton(
-                      onPressed: () =>
-                          {NavigatorRoutes.navigateToWinner(context)},
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: const Color.fromARGB(255, 10, 54, 90),
-                        padding: const EdgeInsets.only(
-                          left: 8.0,
-                          right: 8.0,
-                          top: 10.0,
-                          bottom: 10.0,
-                        ),
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                        ),
-                      ),
-                      child: const Text(
-                        "Surrender",
-                        style: TextStyle(
-                          fontFamily: 'Gabriela',
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                  )
+                  buildTurnInfo(),
+                  buildTurnButtons(),
                 ],
               ),
             )
@@ -133,5 +88,151 @@ class _GameScreenState extends State<GameScreen> {
         bottomNavigationBar: const NavigationBarWidget(),
       ),
     );
+  }
+
+  Widget buildTurnInfo() {
+    if (TicTacToeService.match!.status != 'finished') {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            TicTacToeService.match!.playerInTurn!.character!,
+            width: 80,
+            height: 80,
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          const Text(
+            "It's your TURN!",
+            style: TextStyle(
+              fontFamily: 'Gabriela',
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Color.fromARGB(255, 35, 110, 240),
+            ),
+          ),
+        ],
+      );
+    } else {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            TicTacToeService.match!.playerInTurn!.character!,
+            width: 80,
+            height: 80,
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          const Text(
+            "Is the WINNER!",
+            style: TextStyle(
+              fontFamily: 'Gabriela',
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Color.fromARGB(255, 35, 110, 240),
+            ),
+          ),
+        ],
+      );
+    }
+  }
+
+  Widget buildTurnButtons() {
+    if (TicTacToeService.match!.status != 'finished') {
+      return SizedBox(
+        width: 200,
+        child: ElevatedButton(
+          onPressed: () => {NavigatorRoutes.navigateToHome(context)},
+          style: ElevatedButton.styleFrom(
+            foregroundColor: Colors.white,
+            backgroundColor: const Color.fromARGB(255, 10, 54, 90),
+            padding: const EdgeInsets.only(
+              left: 8.0,
+              right: 8.0,
+              top: 10.0,
+              bottom: 10.0,
+            ),
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
+          ),
+          child: const Text(
+            "Surrender",
+            style: TextStyle(
+              fontFamily: 'Gabriela',
+              fontSize: 18,
+            ),
+          ),
+        ),
+      );
+    } else {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          SizedBox(
+            width: 160,
+            child: ElevatedButton(
+              onPressed: () =>
+                  {NavigatorRoutes.navigateToWaitingReMatch(context)},
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: const Color.fromARGB(255, 10, 54, 90),
+                padding: const EdgeInsets.only(
+                  left: 8.0,
+                  right: 8.0,
+                  top: 10.0,
+                  bottom: 10.0,
+                ),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+              ),
+              child: const Text(
+                "Again",
+                style: TextStyle(
+                  fontFamily: 'Gabriela',
+                  fontSize: 18,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 160,
+            child: ElevatedButton(
+              onPressed: () => {
+                Navigator.popUntil(
+                    context,
+                    (route) =>
+                        route.settings.name == NavigatorRoutes.homeRoute),
+                NavigatorRoutes.navigateToHome(context),
+              },
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: const Color.fromARGB(255, 10, 54, 90),
+                padding: const EdgeInsets.only(
+                  left: 8.0,
+                  right: 8.0,
+                  top: 10.0,
+                  bottom: 10.0,
+                ),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+              ),
+              child: const Text(
+                "Finish",
+                style: TextStyle(
+                  fontFamily: 'Gabriela',
+                  fontSize: 18,
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
   }
 }

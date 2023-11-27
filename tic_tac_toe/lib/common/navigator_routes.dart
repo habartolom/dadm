@@ -5,7 +5,6 @@ import 'package:tic_tac_toe/screens/game.dart';
 import 'package:tic_tac_toe/screens/home.dart';
 import 'package:tic_tac_toe/screens/waiting_match.dart';
 import 'package:tic_tac_toe/screens/waiting_rematch.dart';
-import 'package:tic_tac_toe/screens/winner.dart';
 
 class NavigatorRoutes {
   static const String homeRoute = '/';
@@ -13,7 +12,6 @@ class NavigatorRoutes {
   static const String chooseCharacterRoute = '/chooseCharacter';
   static const String waitingMatchRoute = '/waitingMatch';
   static const String waitingReMatchRoute = '/waitingReMatch';
-  static const String winnerRoute = '/winner';
   static const String availableGamesRoute = '/availableGames';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -28,8 +26,6 @@ class NavigatorRoutes {
         return MaterialPageRoute(builder: (_) => const WaitingMatchScreen());
       case waitingReMatchRoute:
         return MaterialPageRoute(builder: (_) => const WaitingReMatchScreen());
-      case winnerRoute:
-        return MaterialPageRoute(builder: (_) => const WinnerScreen());
       case availableGamesRoute:
         return MaterialPageRoute(builder: (_) => const AvailableGamesScreen());
       default:
@@ -55,10 +51,6 @@ class NavigatorRoutes {
 
   static void navigateToWaitingReMatch(BuildContext context) {
     Navigator.pushNamed(context, waitingReMatchRoute);
-  }
-
-  static void navigateToWinner(BuildContext context) {
-    Navigator.pushNamed(context, winnerRoute);
   }
 
   static void navigateToAvailableMatches(BuildContext context) {

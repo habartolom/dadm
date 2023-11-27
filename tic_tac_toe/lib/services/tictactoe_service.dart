@@ -67,6 +67,7 @@ class TicTacToeService {
         backgroundColor: Colors.blueGrey),
   ];
   static List<SquareModel>? grid;
+  static List<MatchModel>? availableMatches;
 
   static const openSpot = 'assets/images/blank_icon.png';
 
@@ -90,6 +91,17 @@ class TicTacToeService {
     return user;
   }
 
+  static void setBoard() {
+    grid ??= List.generate(
+      match!.board!.length,
+      (index) => SquareModel(
+        index: index,
+        backgroundColor: Colors.blueGrey,
+        assetImage: match!.board![index]!,
+      ),
+    );
+  }
+
   static Future<void> getMatchAsync() async {
     if (user!.match != null) {
       match = await _firebaseService.getMatchByIdAsync(user!.match!);
@@ -101,7 +113,12 @@ class TicTacToeService {
           assetImage: match!.board![index]!,
         ),
       );
+      highlightWinningMove();
     }
+  }
+
+  static Future<void> getAvailableMatchesAsync() async {
+    availableMatches = await _firebaseService.getAvailableMatchesAsync();
   }
 
   static Future<void> startNewGame() async {
@@ -114,12 +131,24 @@ class TicTacToeService {
       score: ScoreModel(
           drawnMatches: 0, wonMatchesPlayer1: 0, wonMatchesPlayer2: 0),
       playerInTurn: player,
+      board: List.generate(9, (index) => openSpot),
     );
     await _firebaseService.startNewGame(match!);
     user?.match = match!.id;
     user?.status = 'choosing avatar';
     await _firebaseService.setUser(user!);
     await _firebaseService.setMatchesCount(matchesCount);
+  }
+
+  static Future<void> startAvailableGame(int index) async {
+    match = availableMatches!.elementAt(index);
+    match!.player2 = PlayerModel(id: user!.id!);
+
+    user?.match = match!.id;
+    user?.status = 'choosing avatar';
+
+    await _firebaseService.setMatch(match!);
+    await _firebaseService.setUser(user!);
   }
 
   static Future<String?> getSavedUserIdAsync() async {
@@ -133,20 +162,18 @@ class TicTacToeService {
   }
 
   static Future<void> setCharacterPlayer(int characterId) async {
-    int playerId;
     String character = characters.elementAt(characterId).assetImage;
 
     if (match!.player1!.id == user!.id!) {
       match!.player1!.character = character;
-      playerId = 1;
       await _firebaseService.setUserStatus(match!.player1!.id, 'waiting match');
     } else {
       match!.player2!.character = character;
-      playerId = 2;
+      match!.status = 'in progress';
       await _firebaseService.setUserStatus(match!.player1!.id, 'playing');
       await _firebaseService.setUserStatus(match!.player2!.id, 'playing');
     }
-    await _firebaseService.setCharacterPlayer(playerId, match!.id!, character);
+    await _firebaseService.setMatch(match!);
   }
 
   static StreamSubscription<DatabaseEvent> listenUserChanged(
@@ -164,7 +191,7 @@ class TicTacToeService {
   }
 
   static StreamSubscription<DatabaseEvent> listenGameChanged(
-      void Function() onListenGameChanged) {
+      void Function(String key) onListenGameChanged) {
     return _firebaseService.listenGameChanged(match!.id!, (event) async {
       final key = event.snapshot.key as String;
 
@@ -186,8 +213,64 @@ class TicTacToeService {
           ),
         );
       }
-      onListenGameChanged();
+
+      if (key == 'score') {
+        final scoreJSON = event.snapshot.value as Map<Object?, dynamic>;
+        final score = ScoreModel.fromJSON(scoreJSON);
+        match!.score = score;
+      }
+
+      if (key == 'status') {
+        final status = event.snapshot.value as String;
+        match!.status = status;
+
+        if (status == 'finished') {
+          highlightWinningMove();
+        }
+      }
+      onListenGameChanged(key);
     });
+  }
+
+  static void highlightWinningMove() {
+    final board = match!.board;
+    Color backgroundColor = Color.fromARGB(255, 46, 110, 207);
+
+    for (var i = 0; i <= 6; i += 3) {
+      if (board![i] != openSpot &&
+          board[i] == board[i + 1] &&
+          board[i + 1] == board[i + 2]) {
+        grid![i].backgroundColor = backgroundColor;
+        grid![i + 1].backgroundColor = backgroundColor;
+        grid![i + 2].backgroundColor = backgroundColor;
+        break;
+      }
+    }
+
+    // Check vertical wins
+    for (var i = 0; i <= 2; i++) {
+      if (board![i] != openSpot &&
+          board[i] == board[i + 3] &&
+          board[i + 3] == board[i + 6]) {
+        grid![i].backgroundColor = backgroundColor;
+        grid![i + 3].backgroundColor = backgroundColor;
+        grid![i + 6].backgroundColor = backgroundColor;
+        break;
+      }
+    }
+
+    // Check for diagonal wins
+    if (board![0] != openSpot && board[0] == board[4] && board[4] == board[8]) {
+      grid![0].backgroundColor = backgroundColor;
+      grid![4].backgroundColor = backgroundColor;
+      grid![8].backgroundColor = backgroundColor;
+    }
+
+    if (board[2] != openSpot && board[2] == board[4] && board[4] == board[6]) {
+      grid![2].backgroundColor = backgroundColor;
+      grid![4].backgroundColor = backgroundColor;
+      grid![6].backgroundColor = backgroundColor;
+    }
   }
 
   static void resolveMove(int index) {

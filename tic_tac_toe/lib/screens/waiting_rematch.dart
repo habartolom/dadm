@@ -44,7 +44,13 @@ class WaitingReMatchScreen extends StatelessWidget {
                 SizedBox(
                   width: 200,
                   child: ElevatedButton(
-                    onPressed: () => {NavigatorRoutes.navigateToBoard(context)},
+                    onPressed: () => {
+                      Navigator.popUntil(
+                          context,
+                          (route) =>
+                              route.settings.name == NavigatorRoutes.homeRoute),
+                      NavigatorRoutes.navigateToHome(context),
+                    },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: const Color.fromARGB(255, 10, 54, 90),
