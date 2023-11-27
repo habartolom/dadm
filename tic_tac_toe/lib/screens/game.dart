@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe/common/navigator_routes.dart';
-import 'package:tic_tac_toe/models/square.dart';
 import 'package:tic_tac_toe/services/tictactoe_service.dart';
 import 'package:tic_tac_toe/widgets/app_bar.dart';
 import 'package:tic_tac_toe/widgets/board.dart';
@@ -21,7 +20,6 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   late StreamSubscription<DatabaseEvent> onEntryChangedSubscription;
-  List<SquareModel>? board = TicTacToeService.grid;
 
   void onSquareTapped(int index) {
     // if (TicTacToeService.user!.id == TicTacToeService.match!.playerInTurn!.id) {
@@ -32,7 +30,6 @@ class _GameScreenState extends State<GameScreen> {
 
   void onlistenGameChanged(String key) {
     print(key);
-    board = TicTacToeService.grid;
     setState(() {});
   }
 
@@ -74,7 +71,7 @@ class _GameScreenState extends State<GameScreen> {
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 40.0),
                     child: BoardWidget(
-                      board: board!,
+                      board: TicTacToeService.grid!,
                       onSquareTapped: onSquareTapped,
                     ),
                   ),
