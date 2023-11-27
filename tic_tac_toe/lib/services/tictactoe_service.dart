@@ -74,20 +74,26 @@ class TicTacToeService {
   static Future<UserModel?> getUserPlayerAsync() async {
     String? userId = await getSavedUserIdAsync();
 
-    if (userId == null) {
-      user = UserModel(
-        registrationDate: DateTime.now().toUtc(),
-        status: 'online',
-        statistics: StatisticsModel(
-            wonMatches: 0, lostMatches: 0, tiedMatches: 0, abandonedMatches: 0),
-      );
-      await _firebaseService.registerUser(user!);
+    final newUser = UserModel(
+      registrationDate: DateTime.now().toUtc(),
+      status: 'online',
+      statistics: StatisticsModel(
+          wonMatches: 0, lostMatches: 0, tiedMatches: 0, abandonedMatches: 0),
+    );
 
+    if (userId == null) {
+      await _firebaseService.registerUser(newUser);
       userId = user!.id!;
       await saveUserIdLocally(userId);
     }
 
     user ??= await _firebaseService.getUser(userId);
+    if (user == null) {
+      await _firebaseService.registerUser(newUser);
+      userId = user!.id!;
+      await saveUserIdLocally(userId);
+    }
+
     return user;
   }
 
