@@ -25,9 +25,7 @@ class _WaitingMatchScreenState extends State<WaitingMatchScreen> {
   }
 
   onListenGameChanged(String key) async {
-    final status = TicTacToeService.user!.status;
-
-    if (status == 'in progress') {
+    if (key == 'status' && TicTacToeService.match!.status == 'in progress') {
       NavigatorRoutes.navigateToBoard(context);
     }
   }
