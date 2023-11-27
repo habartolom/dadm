@@ -125,7 +125,7 @@ class FirebaseService {
     return matchesCount;
   }
 
-  Future<void> deleteMatchAsync(String matchId) async {
+  Future<void> removeMatchAsync(String matchId) async {
     final matchNodeRef = _games.child(matchId);
     return matchNodeRef.remove();
   }

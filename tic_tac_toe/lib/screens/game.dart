@@ -92,7 +92,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget buildTurnInfo() {
-    if (TicTacToeService.match!.status != 'finished') {
+    if (TicTacToeService.match!.status != 'completed') {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -142,7 +142,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget buildTurnButtons() {
-    if (TicTacToeService.match!.status != 'finished') {
+    if (TicTacToeService.match!.status != 'completed') {
       return SizedBox(
         width: 200,
         child: ElevatedButton(

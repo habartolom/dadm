@@ -192,6 +192,11 @@ class TicTacToeService {
       if (key == 'status') {
         final status = event.snapshot.value as String;
         user!.status = status;
+
+        if (status == 'online') {
+          user!.match = null;
+          match = null;
+        }
       }
 
       onListenUserChanged();
@@ -232,8 +237,13 @@ class TicTacToeService {
         final status = event.snapshot.value as String;
         match!.status = status;
 
-        if (status == 'finished') {
+        if (status == 'completed') {
           highlightWinningMove();
+        }
+
+        if (status == 'finished') {
+          user!.status = 'online';
+          _firebaseService.setUser(user!);
         }
       }
 
@@ -290,7 +300,7 @@ class TicTacToeService {
 
   static void resolveMove(int index) {
     // if (user!.id == playerInTurn.id) {
-    if (match!.status != 'finished' && match!.board![index] == openSpot) {
+    if (match!.status != 'completed' && match!.board![index] == openSpot) {
       final playerInTurn = match!.playerInTurn;
       final player1IsPlayerInTurn = playerInTurn!.id == match!.player1!.id;
 
@@ -298,7 +308,7 @@ class TicTacToeService {
       bool matchHasWinner = checkForWinner();
 
       if (matchHasWinner || !(match!.board!.contains(openSpot))) {
-        match!.status = 'finished';
+        match!.status = 'completed';
 
         if (matchHasWinner) {
           player1IsPlayerInTurn
@@ -355,9 +365,8 @@ class TicTacToeService {
   }
 
   static Future<void> finishMatchAsync() async {
-    await _firebaseService.deleteMatchAsync(match!.id!);
-    await _firebaseService.setUserStatus(match!.player1!.id, 'online');
-    await _firebaseService.setUserStatus(match!.player2!.id, 'online');
-    // _firebaseService.de;
+    match!.status = 'finished';
+    _firebaseService.setMatch(match!);
+    _firebaseService.removeMatchAsync(match!.id!);
   }
 }
