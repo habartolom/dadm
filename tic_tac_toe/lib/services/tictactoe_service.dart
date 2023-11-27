@@ -353,4 +353,11 @@ class TicTacToeService {
 
     return hasWinner;
   }
+
+  static Future<void> finishMatchAsync() async {
+    await _firebaseService.deleteMatchAsync(match!.id!);
+    await _firebaseService.setUserStatus(match!.player1!.id, 'online');
+    await _firebaseService.setUserStatus(match!.player2!.id, 'online');
+    // _firebaseService.de;
+  }
 }

@@ -96,14 +96,16 @@ class FirebaseService {
       final availableGamesRef =
           await _games.orderByChild('status').equalTo('pending').once();
       final snapshot = availableGamesRef.snapshot;
-      final availableGamesJSON = snapshot.value as Map<dynamic, dynamic>;
+      if (snapshot.value != null) {
+        final availableGamesJSON = snapshot.value as Map<dynamic, dynamic>;
 
-      availableGamesJSON.forEach((key, game) {
-        final availableGame = MatchModel.fromJSON(key, game);
-        availableGames.add(availableGame);
-      });
+        availableGamesJSON.forEach((key, game) {
+          final availableGame = MatchModel.fromJSON(key, game);
+          availableGames.add(availableGame);
+        });
+      }
     } catch (error) {
-      print("Error al obtener el encuentro: $error");
+      print("Error al obtener los encuentros: $error");
     }
 
     return availableGames;
@@ -121,5 +123,10 @@ class FirebaseService {
     }
 
     return matchesCount;
+  }
+
+  Future<void> deleteMatchAsync(String matchId) async {
+    final matchNodeRef = _games.child(matchId);
+    return matchNodeRef.remove();
   }
 }

@@ -33,6 +33,10 @@ class _GameScreenState extends State<GameScreen> {
     setState(() {});
   }
 
+  void onFinishGame() {
+    TicTacToeService.finishMatchAsync();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -200,6 +204,7 @@ class _GameScreenState extends State<GameScreen> {
             width: 160,
             child: ElevatedButton(
               onPressed: () => {
+                onFinishGame(),
                 Navigator.popUntil(
                     context,
                     (route) =>
