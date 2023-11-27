@@ -1,6 +1,10 @@
+import 'dart:async';
+
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe/common/navigator_routes.dart';
 import 'package:tic_tac_toe/models/square.dart';
+import 'package:tic_tac_toe/services/tictactoe_service.dart';
 import 'package:tic_tac_toe/widgets/app_bar.dart';
 import 'package:tic_tac_toe/widgets/board.dart';
 import 'package:tic_tac_toe/widgets/navigation_bar.dart';
@@ -16,18 +20,26 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
-  final List<SquareModel> board = List.generate(
-    9,
-    (index) => SquareModel(
-      index: index,
-      backgroundColor: Colors.blueGrey,
-      assetImage: "assets/images/angry_blue_bird_icon.png",
-    ),
-  );
+  late StreamSubscription<DatabaseEvent> onEntryChangedSubscription;
+  List<SquareModel>? board = TicTacToeService.grid;
 
   void onSquareTapped(int index) {
-    board[index].assetImage = 'assets/images/angry_red_bird_icon.png';
+    // if (TicTacToeService.user!.id == TicTacToeService.match!.playerInTurn!.id) {
+    TicTacToeService.resolveMove(index);
+    // setState(() {});
+    // }
+  }
+
+  void onlistenGameChanged() {
+    board = TicTacToeService.grid;
     setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    onEntryChangedSubscription =
+        TicTacToeService.listenGameChanged(onlistenGameChanged);
   }
 
   @override
@@ -38,12 +50,12 @@ class _GameScreenState extends State<GameScreen> {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            const ScoreBarWidget(
-              assetImagePlayer1: 'assets/images/angry_red_bird_icon.png',
-              assetImagePlayer2: 'assets/images/angry_blue_bird_icon.png',
-              scorePlayer1: 5,
-              scorePlayer2: 2,
-              ties: 4,
+            ScoreBarWidget(
+              assetImagePlayer1: TicTacToeService.match!.player1!.character!,
+              assetImagePlayer2: TicTacToeService.match!.player2!.character!,
+              scorePlayer1: TicTacToeService.match!.score!.wonMatchesPlayer1,
+              scorePlayer2: TicTacToeService.match!.score!.wonMatchesPlayer2,
+              ties: TicTacToeService.match!.score!.drawnMatches,
             ),
             Expanded(
               child: Column(
@@ -60,7 +72,7 @@ class _GameScreenState extends State<GameScreen> {
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 40.0),
                     child: BoardWidget(
-                      board: board,
+                      board: board!,
                       onSquareTapped: onSquareTapped,
                     ),
                   ),
@@ -80,7 +92,7 @@ class _GameScreenState extends State<GameScreen> {
                         width: 8,
                       ),
                       Image.asset(
-                        "assets/images/angry_red_bird_icon.png",
+                        TicTacToeService.match!.playerInTurn!.character!,
                         width: 40,
                         height: 40,
                       ),

@@ -1,6 +1,6 @@
 class PlayerModel {
   late String id;
-  int? character;
+  String? character;
 
   PlayerModel({
     required this.id,

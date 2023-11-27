@@ -18,7 +18,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void redirect(BuildContext context) async {
     final user = await TicTacToeService.getUserPlayerAsync();
     await TicTacToeService.getMatchAsync();
-    // await firebaseService.setUserListener(user!.id!);
     if (user!.status == "online") {
       NavigatorRoutes.navigateToAvailableMatches(context);
     } else if (user!.status == 'choosing avatar') {
