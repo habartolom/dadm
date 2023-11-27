@@ -83,6 +83,7 @@ class TicTacToeService {
 
     if (userId == null) {
       await _firebaseService.registerUser(newUser);
+      user = newUser;
       userId = user!.id!;
       await saveUserIdLocally(userId);
     }
@@ -90,6 +91,7 @@ class TicTacToeService {
     user ??= await _firebaseService.getUser(userId);
     if (user == null) {
       await _firebaseService.registerUser(newUser);
+      user = newUser;
       userId = user!.id!;
       await saveUserIdLocally(userId);
     }
