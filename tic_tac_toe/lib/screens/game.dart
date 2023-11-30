@@ -22,10 +22,10 @@ class _GameScreenState extends State<GameScreen> {
   late StreamSubscription<DatabaseEvent> onEntryChangedSubscription;
 
   void onSquareTapped(int index) {
-    // if (TicTacToeService.user!.id == TicTacToeService.match!.playerInTurn!.id) {
-    TicTacToeService.resolveMove(index);
-    // setState(() {});
-    // }
+    if (TicTacToeService.user!.id == TicTacToeService.match!.playerInTurn!.id) {
+      TicTacToeService.resolveMove(index);
+      // setState(() {});
+    }
   }
 
   void onlistenGameChanged(String key) {
