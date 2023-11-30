@@ -25,7 +25,7 @@ class _GameScreenState extends State<GameScreen> {
   void onSquareTapped(int index) {
     // if (TicTacToeService.user!.id == TicTacToeService.match!.playerInTurn!.id) {
     TicTacToeService.resolveMove(index);
-    // setState(() {});
+    setState(() {});
     // }
   }
 
