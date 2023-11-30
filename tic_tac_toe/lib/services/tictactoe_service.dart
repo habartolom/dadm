@@ -117,16 +117,19 @@ class TicTacToeService {
 
   static Future<void> getMatchAsync() async {
     if (user!.match != null) {
-      match = await _firebaseService.getMatchByIdAsync(user!.match!);
-      grid = List.generate(
-        match!.board!.length,
-        (index) => SquareModel(
-          index: index,
-          backgroundColor: Colors.blueGrey,
-          assetImage: match!.board![index]!,
-        ),
-      );
-      highlightWinningMove();
+      final userMatch = await _firebaseService.getMatchByIdAsync(user!.match!);
+      if (userMatch != null) {
+        match = userMatch;
+        grid = List.generate(
+          match!.board!.length,
+          (index) => SquareModel(
+            index: index,
+            backgroundColor: Colors.blueGrey,
+            assetImage: match!.board![index]!,
+          ),
+        );
+        highlightWinningMove();
+      }
     }
   }
 
@@ -370,12 +373,7 @@ class TicTacToeService {
   }
 
   static Future<void> finishMatchAsync() async {
-    await _firebaseService.setUserStatus(match!.player1!.id, 'online');
-    await _firebaseService.setUserStatus(match!.player2!.id, 'online');
     match!.status = 'finished';
-    match!.player1 = null;
-    match!.player2 = null;
     _firebaseService.setMatch(match!);
-    _firebaseService.removeMatchAsync(match!.id!);
   }
 }

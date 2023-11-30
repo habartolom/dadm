@@ -31,7 +31,9 @@ class _GameScreenState extends State<GameScreen> {
 
   void onListenGameChanged(String key) {
     print(key);
-    setState(() {});
+    if (key == 'status' && TicTacToeService.match!.status == 'finished') {
+      NavigatorRoutes.navigateToHome(context);
+    }
   }
 
   void onListenUserChanged(String key) {
