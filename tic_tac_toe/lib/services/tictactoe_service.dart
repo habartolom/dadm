@@ -118,7 +118,7 @@ class TicTacToeService {
   static Future<void> getMatchAsync() async {
     if (user!.match != null) {
       final userMatch = await _firebaseService.getMatchByIdAsync(user!.match!);
-      if (userMatch != null) {
+      if (userMatch!.status != 'finished') {
         match = userMatch;
         grid = List.generate(
           match!.board!.length,
