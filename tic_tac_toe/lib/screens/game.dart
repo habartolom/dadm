@@ -19,7 +19,8 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
-  late StreamSubscription<DatabaseEvent> onEntryChangedSubscription;
+  late StreamSubscription<DatabaseEvent> onGameChangedSubscription;
+  late StreamSubscription<DatabaseEvent> onUserChangedSubscription;
 
   void onSquareTapped(int index) {
     // if (TicTacToeService.user!.id == TicTacToeService.match!.playerInTurn!.id) {
@@ -28,20 +29,29 @@ class _GameScreenState extends State<GameScreen> {
     // }
   }
 
-  void onlistenGameChanged(String key) {
+  void onListenGameChanged(String key) {
     print(key);
     setState(() {});
   }
 
-  void onFinishGame() {
-    TicTacToeService.finishMatchAsync();
+  void onListenUserChanged(String key) {
+    print(key);
+    if (key == 'status' && TicTacToeService.match!.status == 'online') {
+      NavigatorRoutes.navigateToHome(context);
+    }
+  }
+
+  void onFinishGame() async {
+    await TicTacToeService.finishMatchAsync();
   }
 
   @override
   void initState() {
     super.initState();
-    onEntryChangedSubscription =
-        TicTacToeService.listenGameChanged(onlistenGameChanged);
+    onGameChangedSubscription =
+        TicTacToeService.listenGameChanged(onListenGameChanged);
+    onUserChangedSubscription =
+        TicTacToeService.listenUserChanged(onListenUserChanged);
     TicTacToeService.setBoard();
   }
 
@@ -176,8 +186,10 @@ class _GameScreenState extends State<GameScreen> {
           SizedBox(
             width: 160,
             child: ElevatedButton(
-              onPressed: () =>
-                  {NavigatorRoutes.navigateToWaitingReMatch(context)},
+              onPressed: () => {
+                TicTacToeService.cleanBoard(),
+                NavigatorRoutes.navigateToWaitingReMatch(context)
+              },
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white,
                 backgroundColor: const Color.fromARGB(255, 10, 54, 90),

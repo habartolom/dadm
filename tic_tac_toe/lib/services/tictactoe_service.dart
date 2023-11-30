@@ -99,6 +99,11 @@ class TicTacToeService {
     return user;
   }
 
+  static void cleanBoard() {
+    match!.board = List.generate(9, (index) => openSpot);
+    _firebaseService.setMatch(match!);
+  }
+
   static void setBoard() {
     grid ??= List.generate(
       match!.board!.length,
@@ -185,7 +190,7 @@ class TicTacToeService {
   }
 
   static StreamSubscription<DatabaseEvent> listenUserChanged(
-      void Function() onListenUserChanged) {
+      void Function(String key) onListenUserChanged) {
     return _firebaseService.listenUserChanged(user!.id!, (event) {
       final key = event.snapshot.key as String;
 
@@ -199,7 +204,7 @@ class TicTacToeService {
         }
       }
 
-      onListenUserChanged();
+      onListenUserChanged(key);
     });
   }
 
@@ -365,7 +370,11 @@ class TicTacToeService {
   }
 
   static Future<void> finishMatchAsync() async {
+    await _firebaseService.setUserStatus(match!.player1!.id, 'online');
+    await _firebaseService.setUserStatus(match!.player2!.id, 'online');
     match!.status = 'finished';
+    match!.player1 = null;
+    match!.player2 = null;
     _firebaseService.setMatch(match!);
     _firebaseService.removeMatchAsync(match!.id!);
   }
