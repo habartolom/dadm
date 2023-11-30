@@ -20,7 +20,6 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   late StreamSubscription<DatabaseEvent> onGameChangedSubscription;
-  late StreamSubscription<DatabaseEvent> onUserChangedSubscription;
 
   void onSquareTapped(int index) {
     // if (TicTacToeService.user!.id == TicTacToeService.match!.playerInTurn!.id) {
@@ -36,13 +35,6 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
-  void onListenUserChanged(String key) {
-    print(key);
-    if (key == 'status' && TicTacToeService.match!.status == 'online') {
-      NavigatorRoutes.navigateToHome(context);
-    }
-  }
-
   void onFinishGame() async {
     await TicTacToeService.finishMatchAsync();
   }
@@ -52,8 +44,6 @@ class _GameScreenState extends State<GameScreen> {
     super.initState();
     onGameChangedSubscription =
         TicTacToeService.listenGameChanged(onListenGameChanged);
-    onUserChangedSubscription =
-        TicTacToeService.listenUserChanged(onListenUserChanged);
     TicTacToeService.setBoard();
   }
 
