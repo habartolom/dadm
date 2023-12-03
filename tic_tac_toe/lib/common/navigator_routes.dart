@@ -3,6 +3,7 @@ import 'package:tic_tac_toe/screens/available_games.dart';
 import 'package:tic_tac_toe/screens/choose_character.dart';
 import 'package:tic_tac_toe/screens/game.dart';
 import 'package:tic_tac_toe/screens/home.dart';
+import 'package:tic_tac_toe/screens/local/choose_character_local.dart';
 import 'package:tic_tac_toe/screens/waiting_match.dart';
 import 'package:tic_tac_toe/screens/waiting_rematch.dart';
 
@@ -14,12 +15,17 @@ class NavigatorRoutes {
   static const String waitingReMatchRoute = '/waitingReMatch';
   static const String availableGamesRoute = '/availableGames';
 
+  static const String chooseCharacterLocalRoute = '/chooseCharacterLocal';
+
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case homeRoute:
         return MaterialPageRoute(builder: (_) => const HomeScreen());
       case chooseCharacterRoute:
         return MaterialPageRoute(builder: (_) => const ChooseCharacterScreen());
+      case chooseCharacterLocalRoute:
+        return MaterialPageRoute(
+            builder: (_) => const ChooseCharacterLocalScreen());
       case boardRoute:
         return MaterialPageRoute(builder: (_) => const GameScreen());
       case waitingMatchRoute:
@@ -41,6 +47,10 @@ class NavigatorRoutes {
     Navigator.pushNamed(context, chooseCharacterRoute);
   }
 
+  static void navigateToChooseCharacterLocal(BuildContext context) {
+    Navigator.pushNamed(context, chooseCharacterLocalRoute);
+  }
+
   static void navigateToBoard(BuildContext context) {
     Navigator.pushNamed(context, boardRoute);
   }
@@ -56,6 +66,4 @@ class NavigatorRoutes {
   static void navigateToAvailableMatches(BuildContext context) {
     Navigator.pushNamed(context, availableGamesRoute);
   }
-
-  static void navigateToChoosingAvatar(BuildContext context) {}
 }

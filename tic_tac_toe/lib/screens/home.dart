@@ -78,7 +78,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(
                     width: 160,
                     child: ElevatedButton(
-                      onPressed: () => {},
+                      onPressed: () => {
+                        NavigatorRoutes.navigateToChooseCharacterLocal(context)
+                      },
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
                         backgroundColor: const Color.fromARGB(255, 10, 54, 90),
