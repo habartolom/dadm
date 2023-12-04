@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:tic_tac_toe/common/navigator_routes.dart';
 import 'package:tic_tac_toe/services/bot_service.dart';
 import 'package:tic_tac_toe/widgets/app_bar.dart';
 import 'package:tic_tac_toe/widgets/character_grid.dart';
-import 'package:tic_tac_toe/widgets/navigation_bar.dart';
 
-class ChooseCharacterLocalScreen extends StatefulWidget {
-  const ChooseCharacterLocalScreen({super.key});
+class LocalChooseCharacterScreen extends StatefulWidget {
+  const LocalChooseCharacterScreen({super.key});
 
   @override
-  State<ChooseCharacterLocalScreen> createState() =>
-      _ChooseCharacterLocalScreenState();
+  State<LocalChooseCharacterScreen> createState() =>
+      _LocalChooseCharacterScreenState();
 }
 
-class _ChooseCharacterLocalScreenState
-    extends State<ChooseCharacterLocalScreen> {
+class _LocalChooseCharacterScreenState
+    extends State<LocalChooseCharacterScreen> {
   int? selectedCharacterIndex;
 
-  void onTapGoToMatchButton(BuildContext context) async {
+  void onTapGoToMatchButton() {
     if (selectedCharacterIndex != null) {
       BotService.setCharacterPlayer(selectedCharacterIndex!);
     }
@@ -73,7 +73,12 @@ class _ChooseCharacterLocalScreenState
                   width: 160,
                   child: ElevatedButton(
                     onPressed: () => {
-                      onTapGoToMatchButton(context),
+                      onTapGoToMatchButton(),
+                      if (selectedCharacterIndex != null)
+                        {
+                          Navigator.pop(context),
+                          NavigatorRoutes.navigateToLocalBoard(context),
+                        }
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
@@ -127,7 +132,6 @@ class _ChooseCharacterLocalScreenState
             ),
           ],
         ),
-        bottomNavigationBar: const NavigationBarWidget(),
       ),
     );
   }

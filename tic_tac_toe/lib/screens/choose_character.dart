@@ -3,7 +3,6 @@ import 'package:tic_tac_toe/common/navigator_routes.dart';
 import 'package:tic_tac_toe/services/tictactoe_service.dart';
 import 'package:tic_tac_toe/widgets/app_bar.dart';
 import 'package:tic_tac_toe/widgets/character_grid.dart';
-import 'package:tic_tac_toe/widgets/navigation_bar.dart';
 
 class ChooseCharacterScreen extends StatefulWidget {
   const ChooseCharacterScreen({super.key});
@@ -131,7 +130,6 @@ class _ChooseCharacterScreenState extends State<ChooseCharacterScreen> {
             ),
           ],
         ),
-        bottomNavigationBar: const NavigationBarWidget(),
       ),
     );
   }

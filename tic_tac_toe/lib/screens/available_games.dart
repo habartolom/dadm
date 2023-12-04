@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:tic_tac_toe/common/navigator_routes.dart';
 import 'package:tic_tac_toe/services/tictactoe_service.dart';
 import 'package:tic_tac_toe/widgets/app_bar.dart';
-import 'package:tic_tac_toe/widgets/navigation_bar.dart';
 
 class AvailableGamesScreen extends StatefulWidget {
   const AvailableGamesScreen({super.key});
@@ -88,7 +87,6 @@ class _AvailableGamesScreenState extends State<AvailableGamesScreen> {
           )
         ],
       ),
-      bottomNavigationBar: const NavigationBarWidget(),
     );
   }
 }

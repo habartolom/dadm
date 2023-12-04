@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/common/navigator_routes.dart';
+import 'package:tic_tac_toe/enums/game_status.dart';
+import 'package:tic_tac_toe/services/bot_service.dart';
 import 'package:tic_tac_toe/services/firebase_service.dart';
 import 'package:tic_tac_toe/services/tictactoe_service.dart';
 import 'package:tic_tac_toe/widgets/app_bar.dart';
@@ -32,6 +34,20 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       NavigatorRoutes.navigateToAvailableMatches(context);
     }
+  }
+
+  void redirectToLocalScreen(BuildContext context) {
+    GameStatusEnum? status = BotService.match?.status;
+    if (status == null || status == GameStatusEnum.ready) {
+      BotService.startNewGame();
+      NavigatorRoutes.navigateToLocalChooseCharacter(context);
+    } else if (status == GameStatusEnum.inProgress) {
+      NavigatorRoutes.navigateToLocalBoard(context);
+    }
+  }
+
+  void startNewGame() {
+    BotService.startNewGame();
   }
 
   @override
@@ -79,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: 160,
                     child: ElevatedButton(
                       onPressed: () => {
-                        NavigatorRoutes.navigateToChooseCharacterLocal(context)
+                        redirectToLocalScreen(context),
                       },
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,

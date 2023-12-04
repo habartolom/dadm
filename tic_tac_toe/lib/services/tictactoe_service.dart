@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tic_tac_toe/enums/game_status.dart';
 import 'package:tic_tac_toe/models/character.dart';
 import 'package:tic_tac_toe/models/match.dart';
 import 'package:tic_tac_toe/models/player.dart';
@@ -118,7 +119,7 @@ class TicTacToeService {
   static Future<void> getMatchAsync() async {
     if (user!.match != null) {
       final userMatch = await _firebaseService.getMatchByIdAsync(user!.match!);
-      if (userMatch!.status != 'finished') {
+      if (userMatch!.status != GameStatusEnum.finished) {
         match = userMatch;
         grid = List.generate(
           match!.board!.length,
@@ -143,10 +144,10 @@ class TicTacToeService {
     match = MatchModel(
       number: ++matchesCount,
       player1: player,
-      status: 'pending',
+      status: GameStatusEnum.pending,
       score: ScoreModel(
           drawnMatches: 0, wonMatchesPlayer1: 0, wonMatchesPlayer2: 0),
-      playerInTurn: player,
+      currentPlayer: player,
       board: List.generate(9, (index) => openSpot),
     );
     await _firebaseService.startNewGame(match!);
@@ -185,7 +186,7 @@ class TicTacToeService {
       await _firebaseService.setUserStatus(match!.player1!.id, 'waiting match');
     } else {
       match!.player2!.character = character;
-      match!.status = 'in progress';
+      match!.status = GameStatusEnum.inProgress;
       await _firebaseService.setUserStatus(match!.player1!.id, 'playing');
       await _firebaseService.setUserStatus(match!.player2!.id, 'playing');
     }
@@ -219,7 +220,7 @@ class TicTacToeService {
       if (key == 'player_in_turn') {
         final playerInTurnJSON = event.snapshot.value as Map<Object?, dynamic>;
         final playerInTurn = PlayerModel.fromJSON(playerInTurnJSON);
-        TicTacToeService.match!.playerInTurn = playerInTurn;
+        TicTacToeService.match!.currentPlayer = playerInTurn;
       }
 
       if (key == 'board') {
@@ -242,10 +243,10 @@ class TicTacToeService {
       }
 
       if (key == 'status') {
-        final status = event.snapshot.value as String;
+        final status = event.snapshot.value as GameStatusEnum;
         match!.status = status;
 
-        if (status == 'completed') {
+        if (status == GameStatusEnum.completed) {
           highlightWinningMove();
         }
 
@@ -267,7 +268,7 @@ class TicTacToeService {
 
   static void highlightWinningMove() {
     final board = match!.board;
-    Color backgroundColor = Color.fromARGB(255, 46, 110, 207);
+    Color backgroundColor = const Color.fromARGB(255, 46, 110, 207);
 
     for (var i = 0; i <= 6; i += 3) {
       if (board![i] != openSpot &&
@@ -309,14 +310,14 @@ class TicTacToeService {
   static void resolveMove(int index) {
     // if (user!.id == playerInTurn.id) {
     if (match!.status != 'completed' && match!.board![index] == openSpot) {
-      final playerInTurn = match!.playerInTurn;
+      final playerInTurn = match!.currentPlayer;
       final player1IsPlayerInTurn = playerInTurn!.id == match!.player1!.id;
 
       match!.board![index] = playerInTurn.character!;
       bool matchHasWinner = checkForWinner();
 
       if (matchHasWinner || !(match!.board!.contains(openSpot))) {
-        match!.status = 'completed';
+        match!.status = GameStatusEnum.completed;
 
         if (matchHasWinner) {
           player1IsPlayerInTurn
@@ -326,7 +327,7 @@ class TicTacToeService {
           match!.score!.drawnMatches++;
         }
       } else {
-        match!.playerInTurn =
+        match!.currentPlayer =
             player1IsPlayerInTurn ? match!.player2 : match!.player1;
       }
     }
@@ -373,7 +374,7 @@ class TicTacToeService {
   }
 
   static Future<void> finishMatchAsync() async {
-    match!.status = 'finished';
+    match!.status = GameStatusEnum.finished;
     _firebaseService.setMatch(match!);
   }
 }

@@ -3,7 +3,8 @@ import 'package:tic_tac_toe/screens/available_games.dart';
 import 'package:tic_tac_toe/screens/choose_character.dart';
 import 'package:tic_tac_toe/screens/game.dart';
 import 'package:tic_tac_toe/screens/home.dart';
-import 'package:tic_tac_toe/screens/local/choose_character_local.dart';
+import 'package:tic_tac_toe/screens/local_choose_character.dart';
+import 'package:tic_tac_toe/screens/local_game.dart';
 import 'package:tic_tac_toe/screens/waiting_match.dart';
 import 'package:tic_tac_toe/screens/waiting_rematch.dart';
 
@@ -15,7 +16,8 @@ class NavigatorRoutes {
   static const String waitingReMatchRoute = '/waitingReMatch';
   static const String availableGamesRoute = '/availableGames';
 
-  static const String chooseCharacterLocalRoute = '/chooseCharacterLocal';
+  static const String chooseCharacterLocalRoute = '/localChooseCharacter';
+  static const String boardLocalRoute = '/localBoard';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -25,9 +27,11 @@ class NavigatorRoutes {
         return MaterialPageRoute(builder: (_) => const ChooseCharacterScreen());
       case chooseCharacterLocalRoute:
         return MaterialPageRoute(
-            builder: (_) => const ChooseCharacterLocalScreen());
+            builder: (_) => const LocalChooseCharacterScreen());
       case boardRoute:
         return MaterialPageRoute(builder: (_) => const GameScreen());
+      case boardLocalRoute:
+        return MaterialPageRoute(builder: (_) => const LocalGameScreen());
       case waitingMatchRoute:
         return MaterialPageRoute(builder: (_) => const WaitingMatchScreen());
       case waitingReMatchRoute:
@@ -47,12 +51,16 @@ class NavigatorRoutes {
     Navigator.pushNamed(context, chooseCharacterRoute);
   }
 
-  static void navigateToChooseCharacterLocal(BuildContext context) {
+  static void navigateToLocalChooseCharacter(BuildContext context) {
     Navigator.pushNamed(context, chooseCharacterLocalRoute);
   }
 
   static void navigateToBoard(BuildContext context) {
     Navigator.pushNamed(context, boardRoute);
+  }
+
+  static void navigateToLocalBoard(BuildContext context) {
+    Navigator.pushNamed(context, boardLocalRoute);
   }
 
   static void navigateToWaitingMatch(BuildContext context) {

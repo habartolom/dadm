@@ -1,3 +1,6 @@
+import 'package:tic_tac_toe/enums/game_difficulty_level.dart';
+import 'package:tic_tac_toe/enums/game_status.dart';
+import 'package:tic_tac_toe/enums/game_winner.dart';
 import 'package:tic_tac_toe/models/player.dart';
 import 'package:tic_tac_toe/models/score.dart';
 
@@ -6,10 +9,13 @@ class MatchModel {
   late int? number;
   late PlayerModel? player1;
   late PlayerModel? player2;
-  late String? status;
+  late GameStatusEnum? status;
   late ScoreModel? score;
   late List<String?>? board;
-  late PlayerModel? playerInTurn;
+  late PlayerModel? currentPlayer;
+  late PlayerModel? initialPlayer;
+  late GameWinnerEnum? winner;
+  late GameDifficultyLevelEnum? difficultyLevel;
 
   MatchModel({
     this.id,
@@ -19,7 +25,10 @@ class MatchModel {
     this.status,
     this.score,
     this.board,
-    this.playerInTurn,
+    this.currentPlayer,
+    this.initialPlayer,
+    this.winner,
+    this.difficultyLevel,
   });
 
   MatchModel.fromJSON(this.id, Map<Object?, dynamic> json) {
@@ -33,7 +42,7 @@ class MatchModel {
     status = json['status'];
     score = json['score'] != null ? ScoreModel.fromJSON(json['score']) : null;
     board = json['board'] != null ? List<String?>.from(json['board']) : null;
-    playerInTurn = json['player_in_turn'] != null
+    currentPlayer = json['player_in_turn'] != null
         ? PlayerModel.fromJSON(json['player_in_turn'])
         : null;
   }
@@ -46,7 +55,7 @@ class MatchModel {
       'status': status,
       'score': score?.toJSON(),
       'board': board,
-      'player_in_turn': playerInTurn?.toJSON(),
+      'player_in_turn': currentPlayer?.toJSON(),
     };
   }
 }
